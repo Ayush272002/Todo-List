@@ -110,7 +110,8 @@ export default function DashboardPage() {
         title: todo.title,
         completed: todo.completed,
         dueDate: todo.dueDate || "",
-        description: todo.description || "",
+        // @ts-ignore
+        description: todo.details || "",
       }));
 
       setTasks(transformedTasks);
