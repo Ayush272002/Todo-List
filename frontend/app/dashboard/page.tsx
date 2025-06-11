@@ -110,7 +110,7 @@ export default function DashboardPage() {
         title: todo.title,
         completed: todo.completed,
         dueDate: todo.dueDate || "",
-        // @ts-ignore
+        // @ts-expect-error there would be a type error here, but we are transforming the data
         description: todo.details || "",
       }));
 
