@@ -16,6 +16,7 @@ import {
   Bell,
   User,
   Settings,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +48,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Task } from "@/interface/Task";
@@ -236,37 +237,37 @@ export default function DashboardPage() {
     }
   };
 
-  // Handle quick add task
-  const handleQuickAddTask = async () => {
-    if (!newTaskTitle.trim()) return;
+  // // Handle quick add task
+  // const handleQuickAddTask = async () => {
+  //   if (!newTaskTitle.trim()) return;
 
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/v1/todos`,
-        {
-          title: newTaskTitle,
-          details: "",
-          dueDate: null,
-        },
-        { withCredentials: true }
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       `${API_BASE_URL}/api/v1/todos`,
+  //       {
+  //         title: newTaskTitle,
+  //         details: "",
+  //         dueDate: null,
+  //       },
+  //       { withCredentials: true }
+  //     );
 
-      if (response.status === 201) {
-        const newTask: Task = {
-          id: response.data.id.toString(),
-          title: response.data.title,
-          description: response.data.details,
-          completed: response.data.completed,
-          dueDate: response.data.dueDate,
-        };
+  //     if (response.status === 201) {
+  //       const newTask: Task = {
+  //         id: response.data.id.toString(),
+  //         title: response.data.title,
+  //         description: response.data.details,
+  //         completed: response.data.completed,
+  //         dueDate: response.data.dueDate,
+  //       };
 
-        setTasks([newTask, ...tasks]);
-        setNewTaskTitle("");
-      }
-    } catch (error) {
-      console.error("Failed to add task:", error);
-    }
-  };
+  //       setTasks([newTask, ...tasks]);
+  //       setNewTaskTitle("");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to add task:", error);
+  //   }
+  // };
 
   const handleLogout = async () => {
     try {
@@ -416,7 +417,10 @@ export default function DashboardPage() {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-500 cursor-pointer" onClick={handleLogout}>
+                  <DropdownMenuItem
+                    className="text-red-500 cursor-pointer"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -536,7 +540,14 @@ export default function DashboardPage() {
                   </div>
 
                   <TabsContent value="all" className="mt-4 space-y-2">
-                    {sortedTasks.length === 0 ? (
+                    {loading ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          Loading tasks...
+                        </h3>
+                      </div>
+                    ) : sortedTasks.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="rounded-full bg-muted p-4">
                           <CheckCircle className="h-8 w-8 text-muted-foreground" />
@@ -565,7 +576,14 @@ export default function DashboardPage() {
                   </TabsContent>
 
                   <TabsContent value="incomplete" className="mt-4 space-y-2">
-                    {sortedTasks.length === 0 ? (
+                    {loading ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          Loading tasks...
+                        </h3>
+                      </div>
+                    ) : sortedTasks.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="rounded-full bg-muted p-4">
                           <CheckCircle className="h-8 w-8 text-muted-foreground" />
@@ -574,7 +592,7 @@ export default function DashboardPage() {
                           All tasks completed!
                         </h3>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          You've completed all your tasks. Great job!
+                          You&apos;ve completed all your tasks. Great job!
                         </p>
                       </div>
                     ) : (
@@ -594,7 +612,14 @@ export default function DashboardPage() {
                   </TabsContent>
 
                   <TabsContent value="completed" className="mt-4 space-y-2">
-                    {sortedTasks.length === 0 ? (
+                    {loading ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          Loading tasks...
+                        </h3>
+                      </div>
+                    ) : sortedTasks.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="rounded-full bg-muted p-4">
                           <Circle className="h-8 w-8 text-muted-foreground" />
@@ -659,7 +684,7 @@ export default function DashboardPage() {
                           id="edit-description"
                           placeholder="Add more details about this task"
                           value={editingTask.description || ""}
-                          onChange={(e: any) =>
+                          onChange={(e) =>
                             setEditingTask({
                               ...editingTask,
                               description: e.target.value,
